@@ -7,7 +7,7 @@ from setuptools import find_packages
 
 REQUIRES = [
     'marshmallow>=2.0.0b1',
-    'marshmallow-sqlalchemy==0.4.1',
+    'marshmallow-sqlalchemy>=0.4.1',
 ]
 
 
