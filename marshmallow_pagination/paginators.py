@@ -19,6 +19,7 @@ def convert_value(row, attr):
 class BasePaginator(six.with_metaclass(abc.ABCMeta, object)):
 
     def __init__(self, cursor, per_page, session, count=None):
+        self.session = session
         self.cursor = cursor
         self.count = count or self._count()
         self.per_page = per_page or self.count
