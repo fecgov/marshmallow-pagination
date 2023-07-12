@@ -18,13 +18,13 @@ def convert_value(row, attr):
 
 class BasePaginator(six.with_metaclass(abc.ABCMeta, object)):
 
-    def __init__(self, cursor, per_page, count=None):
+    def __init__(self, cursor, per_page, session, count=None):
         self.cursor = cursor
         self.count = count or self._count()
         self.per_page = per_page or self.count
 
     def _count(self):
-        return self.cursor.count()
+        return self.session.execute(sa.select(sa.func.count()).select_from(self.cursor).order_by(None)).scalar()
 
     @abc.abstractproperty
     def page_type(self):
@@ -54,7 +54,7 @@ class OffsetPaginator(BasePaginator):
         if self.cursor._limit:
             limit = min(limit, self.cursor._limit - offset)
         query = self.cursor.offset(offset).limit(limit)
-        return query.all() if eager else query
+        return self.session.execute(query).scalars().all() if eager else query
 
 class SeekPaginator(BasePaginator):
     """Paginator using keyset pagination for performance on large result sets.
