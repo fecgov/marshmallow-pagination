@@ -11,10 +11,13 @@ from marshmallow_sqlalchemy.convert import ModelConverter
 from marshmallow_pagination import pages
 
 converter = ModelConverter()
+
+
 def convert_value(row, attr):
     field = converter._get_field_class_for_property(attr.property)
     value = getattr(row, attr.key)
     return field()._serialize(value, None, None)
+
 
 class BasePaginator(six.with_metaclass(abc.ABCMeta, object)):
 
@@ -40,6 +43,7 @@ class BasePaginator(six.with_metaclass(abc.ABCMeta, object)):
     def get_page(self):
         pass
 
+
 class OffsetPaginator(BasePaginator):
     """Paginator based on offsets and limits. Not performant for large result sets.
     """
@@ -50,11 +54,12 @@ class OffsetPaginator(BasePaginator):
         return self.page_type(self, page, self._fetch(offset, limit, eager=eager))
 
     def _fetch(self, offset, limit, eager=True):
-        offset += (self.cursor._offset or 0)
+        offset += (self.cursor.offset or 0)
         if self.cursor._limit:
-            limit = min(limit, self.cursor._limit - offset)
+            limit = min(limit, self.cursor.limit - offset)
         query = self.cursor.offset(offset).limit(limit)
         return query.all() if eager else query
+
 
 class SeekPaginator(BasePaginator):
     """Paginator using keyset pagination for performance on large result sets.
