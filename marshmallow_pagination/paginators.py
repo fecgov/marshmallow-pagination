@@ -59,9 +59,9 @@ class OffsetPaginator(BasePaginator):
         if not eager:
             return query 
         
-        if 'contains_joined_load' in options: 
+        if options.get('contains_joined_load'): 
             return self.session.execute(query).unique().scalars().all()
-        elif 'contains_individual_columns' in options: 
+        elif options.get('contains_individual_columns'): 
              return self.session.execute(query).all()
         else:
             return self.session.execute(query).scalars().all()
@@ -97,7 +97,7 @@ class SeekPaginator(BasePaginator):
             filter = lhs > rhs if direction == sa.asc else lhs < rhs
             cursor = cursor.filter(filter)
         query = cursor.order_by(direction(self.index_column)).limit(limit)
-        return query.all() if eager else query
+        return self.session.execute(query).scalars().all() if eager else query
 
     def _get_index_values(self, result):
         """Get index values from last result, to be used in seeking to the next
