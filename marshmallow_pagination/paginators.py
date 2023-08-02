@@ -75,6 +75,7 @@ class SeekPaginator(BasePaginator):
     def __init__(self, cursor, per_page, session, index_column, count, sort_column=None):
         self.index_column = index_column
         self.sort_column = sort_column
+        super(SeekPaginator, self).__init__(cursor, per_page, session, count=count)
 
     def get_page(self, last_index=None, sort_index=None, eager=True):
         limit = self.per_page
