@@ -25,7 +25,8 @@ class BasePaginator(six.with_metaclass(abc.ABCMeta, object)):
         self.per_page = per_page or self.count
 
     def _count(self):
-        return self.session.execute(sa.select(sa.func.count()).select_from(self.cursor).order_by(None)).scalar()
+        return self.session.scalars(sa.select(sa.func.count())
+                                    .select_from(self.cursor)).one()
 
     @abc.abstractproperty
     def page_type(self):
@@ -62,7 +63,7 @@ class OffsetPaginator(BasePaginator):
         if options.get('contains_joined_load'): 
             return self.session.execute(query).unique().scalars().all()
         elif options.get('contains_individual_columns'): 
-             return self.session.execute(query).all()
+            return self.session.execute(query).all()
         else:
             return self.session.execute(query).scalars().all()
 
