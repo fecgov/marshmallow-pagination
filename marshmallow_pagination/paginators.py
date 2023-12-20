@@ -18,8 +18,9 @@ def convert_value(row, attr):
 
 class BasePaginator(six.with_metaclass(abc.ABCMeta, object)):
 
-    def __init__(self, cursor, per_page, count=None):
+    def __init__(self, cursor, per_page, is_count_exact=None, count=None):
         self.cursor = cursor
+        self.is_count_exact = is_count_exact
         self.count = count or self._count()
         self.per_page = per_page or self.count
 
@@ -62,10 +63,10 @@ class SeekPaginator(BasePaginator):
     """
     page_type = pages.SeekPage
 
-    def __init__(self, cursor, per_page, index_column, sort_column=None, count=None):
+    def __init__(self, cursor, per_page, index_column, is_count_exact=None, sort_column=None, count=None):
         self.index_column = index_column
         self.sort_column = sort_column
-        super(SeekPaginator, self).__init__(cursor, per_page, count=count)
+        super(SeekPaginator, self).__init__(cursor, per_page, is_count_exact=is_count_exact, count=count)
 
     def get_page(self, last_index=None, sort_index=None, eager=True):
         limit = self.per_page

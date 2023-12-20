@@ -35,6 +35,7 @@ class OffsetPage(BasePage):
             'count': self.paginator.count,
             'pages': self.paginator.pages,
             'per_page': self.paginator.per_page,
+            'is_count_exact': self.paginator.is_count_exact,
         }
 
 class SeekPage(BasePage):
@@ -52,4 +53,5 @@ class SeekPage(BasePage):
             'pages': self.paginator.pages,
             'per_page': self.paginator.per_page,
             'last_indexes': self.last_indexes,
+            'is_count_exact': self.paginator.is_count_exact,
         }
