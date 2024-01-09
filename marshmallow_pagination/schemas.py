@@ -29,6 +29,7 @@ class BaseInfoSchema(ma.Schema):
     count = ma.fields.Integer()
     pages = ma.fields.Integer()
     per_page = ma.fields.Integer()
+    is_count_exact = ma.fields.Boolean()
 
 class OffsetInfoSchema(BaseInfoSchema):
     page = ma.fields.Integer()
