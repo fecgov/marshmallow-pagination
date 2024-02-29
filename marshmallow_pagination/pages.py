@@ -5,7 +5,7 @@ import collections
 
 import six
 
-class BasePage(six.with_metaclass(abc.ABCMeta, collections.Sequence)):
+class BasePage(six.with_metaclass(abc.ABCMeta, collections.abc.Sequence)):
     """A page of results.
     """
     def __init__(self, paginator, results):
