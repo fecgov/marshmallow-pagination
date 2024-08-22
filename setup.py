@@ -36,7 +36,7 @@ def read(fname):
 
 setup(
     name='marshmallow-pagination',
-    version=find_version('marshmallow_pagination/__init__.py'),
+    version='3.0.0',
     description='Pagination helpers for Marshmallow',
     long_description=read('README.rst'),
     author='Joshua Carp',
