@@ -46,7 +46,7 @@ setup(
     package_dir={'marshmallow_pagination': 'marshmallow_pagination'},
     include_package_data=True,
     install_requires=REQUIRES,
-    license=read('LICENSE'),
+    # license=read('LICENSE'),
     zip_safe=False,
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
