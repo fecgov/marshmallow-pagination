@@ -51,7 +51,7 @@ class OffsetPaginator(BasePaginator):
         return self.page_type(self, page, self._fetch(offset, limit, eager=eager))
 
     def _fetch(self, offset, limit, eager=True):
-        offset += (self.cursor.offset() or 0)
+        offset += (self.cursor.offset(offset) or 0)
         if self.cursor._limit:
             limit = min(limit, self.cursor._limit - offset)
         query = self.cursor.offset(offset).limit(limit)
