@@ -21,11 +21,8 @@ class BasePaginator(six.with_metaclass(abc.ABCMeta, object)):
     def __init__(self, cursor, per_page, is_count_exact=None, count=None):
         self.cursor = cursor
         self.is_count_exact = is_count_exact
-        self.count = count or self._count()
+        self.count = count or 0
         self.per_page = per_page or self.count
-
-    def _count(self):
-        return self.cursor.count()
 
     @abc.abstractproperty
     def page_type(self):
