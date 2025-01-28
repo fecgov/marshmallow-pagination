@@ -57,7 +57,7 @@ class OffsetPaginator(BasePaginator):
         if self.cursor._limit:
             limit = min(limit, self.cursor._limit - offset)
         query = self.cursor.offset(offset).limit(limit)
-        return self.session.execute(query).scalars().all() if eager else query
+        return self.session.execute(query).scalars().all().unique() if eager else query
 
 class SeekPaginator(BasePaginator):
     """Paginator using keyset pagination for performance on large result sets.
