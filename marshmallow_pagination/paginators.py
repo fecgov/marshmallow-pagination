@@ -48,16 +48,26 @@ class OffsetPaginator(BasePaginator):
     """
     page_type = pages.OffsetPage
 
-    def get_page(self, page, eager=True):
+    def get_page(self, page, eager=True, **options):
         offset, limit = self.per_page * (page - 1), self.per_page
         return self.page_type(self, page, self._fetch(offset, limit, eager=eager))
 
-    def _fetch(self, offset, limit, eager=True):
+    def _fetch(self, offset, limit, eager=True, **options):
         offset += (self.cursor._offset or 0)
         if self.cursor._limit:
             limit = min(limit, self.cursor._limit - offset)
         query = self.cursor.offset(offset).limit(limit)
-        return self.session.execute(query).unique().scalars().all()if eager else query
+
+        if not eager:
+            return query
+
+        if options.get('contains_joined_load'):
+            return self.session.execute(query).unique().scalars().all()
+        elif options.get('contains_individual_columns'):
+            return self.session.execute(query).all()
+        else:
+            return self.session.execute(query).scalars().all()
+
 
 class SeekPaginator(BasePaginator):
     """Paginator using keyset pagination for performance on large result sets.
