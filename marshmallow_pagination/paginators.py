@@ -18,16 +18,28 @@ def convert_value(row, attr):
 
 class BasePaginator(six.with_metaclass(abc.ABCMeta, object)):
 
-    def __init__(self, cursor, per_page, session, is_count_exact=None, count=None):
+    def __init__(self, cursor, per_page, session, is_count_exact=None, count=None, **options):
         self.session = session
+        self.union_query = self._get_union_query(**options) 
         self.cursor = cursor
         self.is_count_exact = is_count_exact
         self.count = count or self._count()
         self.per_page = per_page or self.count
 
+    def _get_union_query(self, **options):
+        if options.get('union_query') is not None:
+            return options.get('union_query')
+        return None
+        
     def _count(self):
+        if self.union_query is None:
+            query = self.cursor
+        else:
+            query = self.union_query
+
         return self.session.scalar(sa.select(sa.func.count())
-                                    .select_from(self.cursor.subquery()))
+                                        .select_from(query.subquery()))
+        
 
     @abc.abstractproperty
     def page_type(self):
@@ -53,18 +65,20 @@ class OffsetPaginator(BasePaginator):
         return self.page_type(self, page, self._fetch(offset, limit, **options))
 
     def _fetch(self, offset, limit, **options):
-        query = self.cursor.offset(offset).limit(limit)
-        
-        if options.get('union_query') is not None:
-            union_query = options.get('union_query')
-            query = query.from_statement(union_query)
-            return self.session.execute(query).scalars().all()
-        elif options.get('contains_individual_columns'):
-            return self.session.execute(query).all()
-        elif options.get('contains_joined_load'):
-            return self.session.execute(query).unique().scalars().all()
+        if self.union_query is not None:
+            self.union_query = sa.select(self.union_query.subquery()).offset(offset).limit(limit)
+            self.cursor = self.cursor.from_statement(self.union_query)
+            return self.session.execute(self.cursor).scalars().all()
         else:
-           return self.session.execute(query).scalars().all()
+            self.cursor = self.cursor.offset(offset).limit(limit)
+        
+        
+        if options.get('contains_individual_columns'):
+            return self.session.execute(self.cursor).all()
+        elif options.get('contains_joined_load'):
+            return self.session.execute(self.cursor).unique().scalars().all()
+        else:
+           return self.session.execute(self.cursor).scalars().all()
 
 
 
