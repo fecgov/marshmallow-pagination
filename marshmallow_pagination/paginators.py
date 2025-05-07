@@ -74,7 +74,7 @@ class OffsetPaginator(BasePaginator):
         
         
         if options.get('contains_individual_columns'):
-            return self.session.execute(self.cursor).all()
+            return self.session.execute(self.cursor).mappings().all()
         elif options.get('contains_joined_load'):
             return self.session.execute(self.cursor).unique().scalars().all()
         else:
