@@ -36,7 +36,7 @@ class BasePaginator(six.with_metaclass(abc.ABCMeta, object)):
             query = self.cursor
         else:
             query = self.union_query
-
+        print("testsettes")
         return self.session.scalar(sa.select(sa.func.count())
                                         .select_from(query.subquery()))
         
