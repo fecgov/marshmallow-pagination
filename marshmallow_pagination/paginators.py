@@ -19,11 +19,23 @@ def convert_value(row, attr):
 class BasePaginator(six.with_metaclass(abc.ABCMeta, object)):
 
     def __init__(self, cursor, per_page, session, is_count_exact=None, count=None, **options):
+        print("BasePaginator.__init__.count=")
+        print(count)
         self.session = session
         self.union_query = self._get_union_query(**options) 
         self.cursor = cursor
         self.is_count_exact = is_count_exact
-        self.count = count or self._count()
+
+        if self.count is not None and self.count > 0:
+            self.count = count or self._count()
+        else:
+            self.count = count
+
+        print("BasePaginator.__init__self.count=")
+        print(self.count)
+ 
+        # self.count = count or self._count()
+
         self.per_page = per_page or self.count
 
     def _get_union_query(self, **options):
