@@ -26,10 +26,10 @@ class BasePaginator(six.with_metaclass(abc.ABCMeta, object)):
         self.cursor = cursor
         self.is_count_exact = is_count_exact
 
-        if self.count is not None and self.count > 0:
-            self.count = count or self._count()
+        if count is not None and count == 0:
+            self.count = 0
         else:
-            self.count = count
+            self.count = count or self._count()
 
         print("BasePaginator.__init__self.count=")
         print(self.count)
