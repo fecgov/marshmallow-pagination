@@ -18,7 +18,7 @@ class BasePage(six.with_metaclass(abc.ABCMeta, collections.abc.Sequence)):
     def __getitem__(self, index):
         return self.results[index]
 
-    @abc.abstractproperty
+    @abc.abstractmethod
     def info(self):
         pass
 

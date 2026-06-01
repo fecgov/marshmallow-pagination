@@ -29,7 +29,7 @@ class BasePaginator(six.with_metaclass(abc.ABCMeta, object)):
         if count is not None and count == 0:
             self.count = 0
         else:
-            self.count = count or self._count()
+            self.count = self._count()
 
         print("BasePaginator.__init__self.count=")
         print(self.count)
@@ -53,7 +53,7 @@ class BasePaginator(six.with_metaclass(abc.ABCMeta, object)):
                                         .select_from(query.subquery()))
         
 
-    @abc.abstractproperty
+    @abc.abstractmethod
     def page_type(self):
         pass
 
@@ -63,7 +63,7 @@ class BasePaginator(six.with_metaclass(abc.ABCMeta, object)):
             return int(math.ceil(self.count / self.per_page))
         return 0
 
-    @abc.abstractproperty
+    @abc.abstractmethod
     def get_page(self):
         pass
 
