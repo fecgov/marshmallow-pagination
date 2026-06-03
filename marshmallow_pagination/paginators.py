@@ -83,6 +83,7 @@ class OffsetPaginator(BasePaginator):
 
     def _fetch(self, offset, limit, **options):
         if self.count == 0:
+            self.is_count_exact = True
             return []
 
         if self.union_query is not None:
