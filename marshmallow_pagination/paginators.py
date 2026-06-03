@@ -82,6 +82,9 @@ class OffsetPaginator(BasePaginator):
         return self.page_type(self, page, self._fetch(offset, limit, **options))
 
     def _fetch(self, offset, limit, **options):
+        if self.count == 0:
+            return []
+
         if self.union_query is not None:
             self.union_query = sa.select(self.union_query.subquery()).offset(offset).limit(limit)
             self.cursor = self.cursor.from_statement(self.union_query)
