@@ -19,28 +19,21 @@ def convert_value(row, attr):
 class BasePaginator(six.with_metaclass(abc.ABCMeta, object)):
 
     def __init__(self, cursor, per_page, session, is_count_exact=None, count=None, **options):
-        print("BasePaginator.__init__.count=")
-        print(count)
         self.session = session
         self.union_query = self._get_union_query(**options) 
         self.cursor = cursor
         self.is_count_exact = is_count_exact
 
         if count is None:
-            # is exact count
+            # get exact count
             self.count = self._count()
         elif count is not None and count == 0:
             # no result exist
             self.count = 0
         else:
-            # is estimated count
+            # is estimated count or exact count
             self.count = count
-
-        print("BasePaginator.__init__self.count=")
-        print(self.count)
  
-        # self.count = count or self._count()
-
         self.per_page = per_page or self.count
 
     def _get_union_query(self, **options):
@@ -53,11 +46,9 @@ class BasePaginator(six.with_metaclass(abc.ABCMeta, object)):
             query = self.cursor
         else:
             query = self.union_query
-        print("testsettes")
         return self.session.scalar(sa.select(sa.func.count())
                                         .select_from(query.subquery()))
         
-
     @abc.abstractmethod
     def page_type(self):
         pass
