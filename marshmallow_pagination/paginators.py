@@ -38,7 +38,8 @@ class BasePaginator(six.with_metaclass(abc.ABCMeta, object)):
             query = self.union_query
 
         return self.session.scalar(sa.select(sa.func.count())
-                                        .select_from(query.subquery()))
+                                        .select_from(query.order_by(None).with_only_columns(
+        sa.literal(1)).subquery()))
         
 
     @abc.abstractproperty
