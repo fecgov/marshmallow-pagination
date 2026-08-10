@@ -23,7 +23,17 @@ class BasePaginator(six.with_metaclass(abc.ABCMeta, object)):
         self.union_query = self._get_union_query(**options) 
         self.cursor = cursor
         self.is_count_exact = is_count_exact
-        self.count = count or self._count()
+
+        if count is None:
+            # get exact count
+            self.count = self._count()
+        elif count is not None and count == 0:
+            # no result exist
+            self.count = 0
+        else:
+            # is estimated count or exact count
+            self.count = count
+ 
         self.per_page = per_page or self.count
 
     def _get_union_query(self, **options):
@@ -36,12 +46,10 @@ class BasePaginator(six.with_metaclass(abc.ABCMeta, object)):
             query = self.cursor
         else:
             query = self.union_query
-
         return self.session.scalar(sa.select(sa.func.count())
                                         .select_from(query.subquery()))
         
-
-    @abc.abstractproperty
+    @abc.abstractmethod
     def page_type(self):
         pass
 
@@ -51,7 +59,7 @@ class BasePaginator(six.with_metaclass(abc.ABCMeta, object)):
             return int(math.ceil(self.count / self.per_page))
         return 0
 
-    @abc.abstractproperty
+    @abc.abstractmethod
     def get_page(self):
         pass
 
@@ -65,6 +73,10 @@ class OffsetPaginator(BasePaginator):
         return self.page_type(self, page, self._fetch(offset, limit, **options))
 
     def _fetch(self, offset, limit, **options):
+        if self.count == 0:
+            self.is_count_exact = True
+            return []
+
         if self.union_query is not None:
             self.union_query = sa.select(self.union_query.subquery()).offset(offset).limit(limit)
             self.cursor = self.cursor.from_statement(self.union_query)
